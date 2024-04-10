@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from main import *
-
+import sys
 
 data_path = ""  # Global variable to store the selected file path
 logs_path = ""  # Global variable to store
@@ -42,6 +42,7 @@ def openFile(window, type, mes_label):
                 if pack == 0:
                     label_success = Label(window, text=f"Data Path Selected: {data_path} ✅")
                     label_success.pack()
+                    check_box(window, data_path)
 
         else:
             label = Label(window, text=f"Empty directory. Please select a valid directory. ❌")
@@ -77,6 +78,24 @@ def check_memory_limit(var, label):
             if label.winfo_ismapped():
                 label.pack_forget()
 
+def label_checking(var, canvas): 
+    if var.get():
+        canvas.draw()
+        canvas.get_tk_widget().pack()
+    else:
+        if canvas.get_tk_widget().winfo_ismapped():
+            canvas.get_tk_widget().pack_forget()
+
+
+def check_box(window, data_path):
+    v = BooleanVar()
+    if data_path != '':
+        batch = getBatch(data_path)[0]
+        figure = checkLabels(batch)
+        canvas = FigureCanvasTkAgg(figure, master=window)
+        plot_button = Checkbutton(window, text="Check the label of classes", variable=v, command=lambda: label_checking(v, canvas))
+        plot_button.pack() 
+
 def a():
     try:
         checkImg(data_path, image_exts)
@@ -98,8 +117,16 @@ def a():
 
 def main():
     global data_path, logs_path, image_exts
+
     window = Tk()
     window.geometry("800x600")
+
+    def on_close():
+        window.destroy()
+        sys.exit()  # Exit the program when the window is closed
+
+    window.protocol("WM_DELETE_WINDOW", on_close)  # Handle window close event
+
     # Create a Text widget
     ins = Label(window, text=f"Please enter your data path\nNote: This should be a directory containing different folders for different classes.")
     ins.pack()
@@ -118,12 +145,11 @@ def main():
     btn2.pack()
 
     var = BooleanVar()
-
-    # Create the checkbox
     checkbox = Checkbutton(window, text="Limit memory growth", variable=var, command=lambda: check_memory_limit(var, label))
     checkbox.pack()
 
 
+    
 
     window.mainloop()
     

@@ -6,6 +6,10 @@ import cv2
 import imghdr
 from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib.figure import Figure 
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,  
+NavigationToolbar2Tk) 
+
 
 
 def limit():
@@ -52,11 +56,11 @@ def getBatch(data_dir):
 
 def checkLabels(batch):
     # Check labels of images
-    fig, ax = plt.subplots(ncols=4, figsize=(20, 20))
-    for idx, img in enumerate(batch[0][:4]):
-        ax[idx].imshow(img.astype(int))
-        ax[idx].title.set_text(batch[1][idx])
-    plt.show()
+    fig, ax = plt.subplots(ncols=4, figsize=(20, 20)) # Save figure 
+    for idx, img in enumerate(batch[0][:4]): # Iterate through the first 4 images
+        ax[idx].imshow(img.astype(int)) # Show the image
+        ax[idx].title.set_text(batch[1][idx]) # Set the title of the image
+    return fig
 
 
 def scale(data):
