@@ -1,6 +1,5 @@
 
 
-
 from pathlib import Path
 
 # from tkinter import *
@@ -12,8 +11,21 @@ OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ASUS\Downloads\Tkinter-Designer-master\Tkinter-Designer-master\build\assets\frame0")
 
 
+name = ''
+data_path = ''
+logs_path = ''
+
+def save():
+    global name, data_path, logs_path
+    name = entry_1.get()
+    data_path = entry_2.get()
+    logs_path = entry_3.get()
+    print(name, data_path, logs_path)
+
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
+
+
 
 
 window = Tk()
@@ -63,6 +75,7 @@ entry_1 = Entry(
     fg="#000716",
     highlightthickness=0
 )
+
 entry_1.place(
     x=383.5,
     y=122.0,
@@ -85,7 +98,7 @@ entry_2 = Entry(
 )
 entry_2.place(
     x=383.5,
-    y=296.0,
+    y=209.0,
     width=211.0,
     height=31.0
 )
@@ -105,7 +118,7 @@ entry_3 = Entry(
 )
 entry_3.place(
     x=383.5,
-    y=209.0,
+    y=296.0,
     width=211.0,
     height=31.0
 )
@@ -116,7 +129,7 @@ canvas.create_text(
     anchor="nw",
     text="Model’s name ",
     fill="#000000",
-    font=("Rubik Regular", 12 * -1)
+    font=("Italiana Regular", 12 * -1)
 )
 
 canvas.create_text(
@@ -125,7 +138,7 @@ canvas.create_text(
     anchor="nw",
     text="Data Path",
     fill="#000000",
-    font=("Arial", 12 * -1)
+    font=("Italiana Regular", 12 * -1)
 )
 
 canvas.create_text(
@@ -175,7 +188,7 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
+    command=lambda: save(),
     relief="flat"
 )
 button_3.place(
@@ -206,9 +219,9 @@ canvas.create_text(
     11.0,
     296.0,
     anchor="nw",
-    text="Made by EdDee\nContact information:\nGithub: EdDee296\nLinkedin: David Pham\nDiscord: eddee296\nEmail: dav1dph869@gmail.com",
+    text="Made by David Pham\nContact information:\nGithub\nLinkedin\nDiscord: eddee296\nEmail: dav1dph869@gmail.com",
     fill="#FFFFFF",
-    font=("Rubik Regular", 12 * -1)
+    font=("Inter", 12 * -1)
 )
 window.resizable(False, False)
 window.mainloop()
