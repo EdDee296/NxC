@@ -7,7 +7,15 @@ data_path = ""  # Global variable to store the selected file path
 logs_path = ""  # Global variable to store
 image_exts = ['jpeg', 'jpg', 'bmp', 'png']
 
-def openFile(window, type, mes_label):
+def remove_all_widgets(window):
+    # Get a list of all widgets in the window
+    widgets = window.winfo_children()
+    
+    # Destroy each widget in the list
+    for widget in widgets:
+        widget.destroy()
+
+def openFile(window, type):
     if type == "data":
         global data_path  # Use the global keyword to modify the global variable
         pack = 0
@@ -58,17 +66,43 @@ def openFile(window, type, mes_label):
             label = Label(window, text=f"This is not a valid directory for logs. Please select a valid directory. ❌")
             label.pack()
 
-def of(window, type, btn, label):
+def ok(window):
+    remove_all_widgets(window)
+
+def ofdata(window, type, btn):
     global data_path, logs_path
-    openFile(window, type, label)
-    if data_path != "" or logs_path != "":
-        def rm(btn1, btn2):
-            btn1.pack_forget()
-            btn2.pack_forget()
-        btn1 = Button(text="OK",
-                      command=lambda: rm(btn1, btn))
-        btn1.place(x=100, y=80)
-        btn1.pack()
+    change_data_btn = Button(text="Change Data Path",
+                             command=lambda: ofdata(window, type, btn))
+
+    okbtn = Button(text="OK",
+                   command=lambda: ok(window))
+    openFile(window, type)
+    if data_path != "":
+        btn.pack_forget()
+        if not change_data_btn.winfo_ismapped():
+            change_data_btn.place(x=100, y=50)
+            change_data_btn.pack()
+    if data_path != "" and logs_path != "":
+        okbtn.place(x=100, y=80)
+        okbtn.pack()
+
+def oflogs(window, type, btn):
+    global data_path, logs_path
+    change_logs_btn = Button(text="Change Logs Path",
+                             command=lambda: oflogs(window, type, btn))
+    okbtn = Button(text="OK",
+                   command=lambda: ok(window))
+    openFile(window, type)
+    if logs_path != "":
+        btn.pack_forget()
+        if not change_logs_btn.winfo_ismapped():
+            change_logs_btn.place(x=100, y=60)
+            change_logs_btn.pack()
+        
+    if data_path != "" and logs_path != "":
+        okbtn.place(x=100, y=80)
+        okbtn.pack()
+    
 
 def check_memory_limit(var, label):
         if var.get():
@@ -85,7 +119,6 @@ def label_checking(var, canvas):
     else:
         if canvas.get_tk_widget().winfo_ismapped():
             canvas.get_tk_widget().pack_forget()
-
 
 def check_box(window, data_path):
     v = BooleanVar()
@@ -111,12 +144,13 @@ def a():
 
     model = createModel()
 
-    hist = trainModel(model, train, val)
+    hist = trainModel(model, train, val, logs_path)
     evaluate(model, test)
     saveModel(model)
 
 def main():
     global data_path, logs_path, image_exts
+    pack = 0
 
     window = Tk()
     window.geometry("800x600")
@@ -132,15 +166,14 @@ def main():
     ins.pack()
 
     label = Label(window, text="Memory usage is limited.")
-    mes_label = Label(window, text="Please select a valid directory. ❌")
 
     btn1 = Button(text="Data",
-                  command=lambda: of(window, 'data', btn1, mes_label))
+                  command=lambda: ofdata(window, 'data', btn1))
     btn1.place(x=100, y=50)
     btn1.pack()
 
     btn2 = Button(text="Logs",
-                  command=lambda: of(window, 'logs', btn2, mes_label))
+                  command=lambda: oflogs(window, 'logs', btn2))
     btn2.place(x=100, y=60)
     btn2.pack()
 

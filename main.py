@@ -108,9 +108,8 @@ def createModel():
     return model
 
 
-def trainModel(model, train, val):
+def trainModel(model, train, val, logdir):
     # Train the model
-    logdir = 'logs'
     tensorboard_callback = tf.keras.callbacks.TensorBoard(
         log_dir=logdir)  # Tensorboard callback
     hist = model.fit(train, epochs=20, validation_data=val,
