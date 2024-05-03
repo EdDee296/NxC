@@ -1,10 +1,14 @@
 
 
 from pathlib import Path
+from tkinter import *
+from tkinter import filedialog
+import sys
+sys.path.append('C:/Users/ASUS/OneDrive/New folder/New folder')
 
-# from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from main import *
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -21,6 +25,59 @@ def save():
     data_path = entry_2.get()
     logs_path = entry_3.get()
     print(name, data_path, logs_path)
+
+
+def openFile(window, type):
+    if type == "data":
+        global data_path  # Use the global keyword to modify the global variable
+        pack = 0
+        data_path = filedialog.askdirectory()
+        data_path = data_path.replace('/', '\\')
+        # Get a list of all entries (files and directories) in the folder
+        entries = os.listdir(data_path)
+        
+        if len(entries) != 0:
+            # Check if there are any non-image files or subdirectories
+            subdirectories = []
+
+            for entry in entries:
+                full_path = os.path.join(data_path, entry)
+                if not os.path.isdir(full_path):
+                    label = Label(window, text=f"Make sure there are only different folders for different classes in your data directory. Please select again. ❌\n")
+                    label.pack()
+                    pack = 1
+                    break
+                else:
+                    files = os.listdir(full_path)
+                    for file in files:
+                        file_path = os.path.join(full_path, file)
+                        if os.path.isdir(file_path):
+                            subdirectories.append(file)
+
+            if subdirectories:
+                if pack == 0:
+                    label_subdirs = Label(window, text=f"There exists subfolder(s) in your classes folder. Please select again. ❌\n {subdirectories}")
+                    label_subdirs.pack()
+            else:
+                if pack == 0:
+                    label_success = Label(window, text=f"Data Path Selected: {data_path} ✅")
+                    label_success.pack()
+                    
+
+        else:
+            label = Label(window, text=f"Empty directory. Please select a valid directory. ❌")
+            label.pack()
+    else:
+        global logs_path
+        logs_path = filedialog.askdirectory()
+        logs_path = logs_path.replace('/', '\\')
+        if os.path.isdir(logs_path):
+            label = Label(window, text=f"Logs Path Selected: {logs_path} ✅")
+            label.pack()
+        else:
+            label = Label(window, text=f"This is not a valid directory for logs. Please select a valid directory. ❌")
+            label.pack()
+
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -156,7 +213,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
+    command=lambda: openFile(window, "data"),
     relief="flat"
 )
 button_1.place(
