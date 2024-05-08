@@ -18,6 +18,17 @@ def save():
     data_path = entry_2.get()
     logs_path = entry_3.get()
     print(name, data_path, logs_path)
+    canvas = Canvas(
+    window,
+    bg = "#FFFFFF",
+    height = 423,
+    width = 670,
+    bd = 0,
+    highlightthickness = 0,
+    relief = "ridge"
+)
+
+    canvas.place(x = 0, y = 0)
 
 
 def openFile(type):

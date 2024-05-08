@@ -84,11 +84,12 @@ def splitData(scaled_data):
     return train, val, test
 
 
+
 def createModel():
     # Create the model
     model = Sequential()
-    # Architecture:  16 filters, 3x3 kernel, 1 stride, relu activation, input shape 256x256x3
-    model.add(Conv2D(16, (3, 3), 1, activation='relu', input_shape=(256, 256, 3)))
+    # Architecture:  16 filters, 3x3 kernel size, 1 stride, relu activation, input shape 256x256x3
+    model.add(Conv2D(filters=16, kernel_size=(3, 3), stride=1, activation='relu', input_shape=(256, 256, 3)))
     model.add(MaxPooling2D())
     # Architecture:  32 filters, 3x3 kernel, 1 stride, relu activation
     model.add(Conv2D(32, (3, 3), 1, activation='relu'))
@@ -103,9 +104,8 @@ def createModel():
     model.add(Dense(1, activation='sigmoid'))
     # adam optimizer, binary crossentropy loss, accuracy metric
     model.compile('adam', loss=tf.losses.BinaryCrossentropy(),
-                  metrics=['accuracy'])
-    # model.summary()
-    return model
+                    metrics=['accuracy'])
+
 
 
 def trainModel(model, train, val, logdir):
