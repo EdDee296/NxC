@@ -25,6 +25,11 @@ class Layer():
         self.layer = layer
         self.args = args
         self.index = 0
+        self.name = ''
+        self.layer_var = StringVar()
+        def update(*args):
+            self.name = self.layer_var.get()
+        self.layer_var.trace_add("write", update)
         
     def create_layer(self):
         self.canvas.create_text( 80.0,
@@ -33,8 +38,7 @@ class Layer():
                             text=str(self.index+1)+'.',
                             fill="#000000",
                             font=("Inter", 12 * -1))
-        
-        layer = ttk.Combobox(self.window, values=self.layer, width=10)
+        layer = ttk.Combobox(self.window, values=self.layer, width=10, textvariable=self.layer_var)
         self.canvas.create_window(
             127.0,
             269.0,
@@ -68,6 +72,9 @@ class Layer():
             height=16.0,
             window=textbox
         )
+
+    def layer_val(self):
+        return self.layer_var.get()
 
     def add_argument(self):
         pass
@@ -179,25 +186,6 @@ md_type = canvas.create_image(
     image=image_image_5
 )
 
-button_ok = PhotoImage(
-    file=relative_to_assets("button_1.png"))
-ok_btn = Button(
-    image=button_ok,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print_selection(),
-    relief="flat"
-)
-canvas.create_window(
-    283.0,
-    380.0,
-    width=104.0,
-    height=37.0,
-    anchor='nw',
-    window=ok_btn
-)
-
-
 
 '''canvas.create_text(
     80.0,
@@ -242,6 +230,7 @@ layer = ['a', 'b', 'c', 'd', 'e', 'f']
 args = ['1', '2', '3', '4', '5']
 a = Layer(window, canvas, layer, args)
 a.create_layer()
+name = a.layer_val()
 button_add_layer = PhotoImage(
     file=relative_to_assets("button_2.png"))
 add_layer_btn = Button(
@@ -301,5 +290,24 @@ canvas.create_window(
     fill="#000000",
     font=("Inter", 12 * -1)
 )'''
+
+button_ok = PhotoImage(
+    file=relative_to_assets("button_1.png"))
+ok_btn = Button(
+    image=button_ok,
+    borderwidth=0,
+    highlightthickness=0,
+    command=lambda: print(a.name+' ngu vcl djt con me may'),
+    relief="flat"
+)
+canvas.create_window(
+    283.0,
+    380.0,
+    width=104.0,
+    height=37.0,
+    anchor='nw',
+    window=ok_btn
+)
+
 window.resizable(False, False)
 window.mainloop()
