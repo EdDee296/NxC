@@ -1,0 +1,5 @@
+increment_pos(init_pos['layer_combobox'], increase)
+        increment_pos(init_pos['arg_combobox'], increase)
+        increment_pos(init_pos['textbox'], increase)
+        increment_pos(init_pos['index'], increase)
+        increment_pos(init_pos['equal'], increase)
