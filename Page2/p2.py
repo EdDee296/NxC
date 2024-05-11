@@ -27,7 +27,7 @@ init_pos = {'button_add_layer': [119.0, 341.0],
             'arg_combobox': [125.0, 304.0],
             'textbox': [250.0, 310.0]}
 
-increase = 150
+increase = 100
 
 class Layer():
     def __init__(self, window: Tk, canvas: Canvas, layer: list, args: list):
@@ -39,15 +39,15 @@ class Layer():
         self.layer_names = {}
         self.arg_names = {}
         self.images = []
+        self.add_layer_btn = self.create_button("button_2.png", init_pos["button_add_layer"], 84.0, 17.0, self.init_layer)
         self.ok_btn = self.create_button("button_1.png", init_pos["button_ok"], 104, 37, lambda: print("layers: ", self.layer_names," args: ", self.arg_names))
         
     def init_layer(self):
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
         self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
-        self.create_button("button_2.png", init_pos["button_add_layer"], 84.0, 17.0, self.init_layer)
         self.create_button("button_3.png", init_pos["btn_rm"], 76.0, 13.0, lambda: print('layer removed'))
         self.create_button("button_4.png", init_pos["add_arg"], 77, 11, lambda: print('add arg'))
-        increment_pos(init_pos["button_add_layer"], increase)
+
         increment_pos(init_pos["btn_rm"], increase)
         increment_pos(init_pos["add_arg"], increase)
         increment_pos(init_pos["arg_combobox"], increase)
@@ -55,6 +55,8 @@ class Layer():
         increment_pos(init_pos["textbox"], increase)
         increment_pos(init_pos['index'], increase)
         increment_pos(init_pos['layer_combobox'], increase)
+        self.canvas.coords(self.add_layer_btn,init_pos['button_add_layer'])
+        increment_pos(init_pos["button_add_layer"], increase)
         self.canvas.coords(self.ok_btn,init_pos["button_ok"])
         increment_pos(init_pos['button_ok'], increase)
 
@@ -75,7 +77,7 @@ class Layer():
         layer_var = StringVar()
         layer_var.trace_add("write", lambda *arg: self.add_name(self.layer_names, layer_var.get()))
 
-        layer = ttk.Combobox(self.window, values=self.layer, width=10, textvariable=layer_var)
+        layer = ttk.Combobox(self.window, values=self.layer, width=10, textvariable=layer_var, state="readonly")
         self.canvas.create_window(
             layer_pos[0],
             layer_pos[1],
@@ -87,7 +89,7 @@ class Layer():
     def create_argument(self, arg_pos: list, equal_pos: list, textbox_pos: list):
         arg_var = StringVar()
         arg_var.trace_add("write", lambda *arg: self.add_name(self.arg_names, arg_var.get()))
-        arg = ttk.Combobox(self.window, values=self.args, width=7, textvariable=arg_var)
+        arg = ttk.Combobox(self.window, values=self.args, width=7, textvariable=arg_var, state="readonly")
         self.canvas.create_window(
             arg_pos[0],
             arg_pos[1],
