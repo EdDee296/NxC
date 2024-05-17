@@ -16,6 +16,9 @@ def relative_to_assets(path: str) -> Path:
 def increment_pos(pos: list, x: int):
     pos[1] += x
     return pos
+def decrement_pos(pos: list, x: int):
+    pos[1] -= x
+    return pos
 
 init_pos = {'button_add_layer': [119.0, 341.0], 
             'btn_rm': [220.0, 273.0], 
@@ -46,22 +49,24 @@ class Layer():
         self.ok_btn = self.create_button("button_1.png", init_pos["button_ok"], 104, 37, self.save_values)  
 
     def init_layer(self):
+        del_x = init_pos["textbox"][1]
+        add_x = init_pos["layer_combobox"][1]
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
         self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
-        self.create_button("button_3.png", init_pos["btn_rm"], 76.0, 13.0, lambda: print('layer removed'))
-        self.create_button("button_4.png", init_pos["add_arg"], 77, 11, lambda *arg: self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox']))
+        self.create_button("button_3.png", [init_pos["layer_combobox"][0] + increase, add_x], 76.0, 13.0, lambda: print('layer removed'))
+        self.add_arg()
         self.last_y = init_pos['layer_combobox'][1]  # Keep track of the y-coordinate of the last widget
         self.reposition_widgets()
         increment_pos(init_pos['btn_rm'], increase)
-        increment_pos(init_pos['add_arg'], increase)
         
+    def add_arg(self):
+        for i in range(len(self.args)):
+            self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
+
     def save_values(self):
         self.layer_names = {widget.current(): widget.get() for widget in self.layer_widgets}
         self.arg_names = {widget.current(): widget.get() for widget in self.arg_widgets}
         print("layers: ", list(self.layer_names.values())," args: ", list(self.arg_names.values()))
-
-    def add_name(self, dict, name):
-        dict[self.index]=name
         
     def create_layer_name(self, index_pos: list, layer_pos: list):
         index = self.canvas.create_text( 
@@ -123,10 +128,11 @@ class Layer():
         self.last_y += increase  # Update the y-coordinate of the last widget
         self.reposition_widgets()
         increment_pos(init_pos['layer_combobox'], increase)
-        increment_pos(init_pos['arg_combobox'], increase)
+        increment_pos(init_pos['arg_combobox'], increase/2)
         increment_pos(init_pos['textbox'], increase)
         increment_pos(init_pos['index'], increase)
-        increment_pos(init_pos['equal'], increase)
+        increment_pos(init_pos['equal'], increase/2)
+        
         return arg, textbox, equal
     
     def reposition_widgets(self):
