@@ -72,6 +72,13 @@ class Layer():
             new_layer_name = layer_widget.get()
             old_layer_name = self.layer_widget_keys.get(layer_widget)
 
+            # If the layer name already exists, add a number to the end
+            original_layer_name = new_layer_name
+            i = 1
+            while new_layer_name in self.data and new_layer_name != old_layer_name:
+                new_layer_name = original_layer_name + str(i)
+                i += 1
+
             if old_layer_name is not None and old_layer_name in self.data:
                 self.data[new_layer_name] = self.data.pop(old_layer_name)
             elif new_layer_name not in self.data:
@@ -109,7 +116,6 @@ class Layer():
             font=("Inter", 12 * -1)
         )
         self.index +=1
-
         layer_var = StringVar()
         layer = ttk.Combobox(self.window, values=self.layer, width=10, textvariable=layer_var, state="readonly")
         self.layer_widgets.append(layer)
@@ -118,7 +124,6 @@ class Layer():
             layer_pos[1],
             window=layer
         )
-
         return layer, index
 
     def create_argument(self, arg_pos: list, equal_pos: list, textbox_pos: list):
@@ -169,8 +174,6 @@ class Layer():
         # Reposition all widgets based on the y-coordinate of the last widget
         self.canvas.coords(self.add_layer_btn, init_pos['button_add_layer'][0] + 15, self.last_y)
         self.canvas.coords(self.ok_btn, init_pos["button_ok"][0], self.last_y + 50)
-        
-        
 
     def create_button(self, img_name, button_pos: list, width, height, command):
         img = PhotoImage(
