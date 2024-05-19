@@ -20,8 +20,7 @@ def decrement_pos(pos: list, x: int):
     pos[1] -= x
     return pos
 
-init_pos = {'button_add_layer': [119.0, 341.0], 
-            'btn_rm': [220.0, 273.0], 
+init_pos = {'button_add_layer': [119.0, 341.0],  
             'add_arg': [335, 310], 
             'button_ok': [330, 380],
             'index': [70.0, 269.0],
@@ -40,33 +39,65 @@ class Layer():
         self.args = args
         self.index = 0
         self.last_y = init_pos['layer_combobox'][1]  # Keep track of the y-coordinate of the last widget
+        self.images = []
+
         self.layer_widgets = []
         self.arg_widgets = []
+        self.textbox_widgets = []
+
         self.layer_names = {}
         self.arg_names = {}
-        self.images = []
+        
+        self.layer_widget_keys = {}  # Keeps track of the current keys in self.data
+        self.arg_widget_keys = {}  # Keeps track of the current keys in the inner dictionaries
+
+        self.data = {}
         self.add_layer_btn = self.create_button("button_2.png", init_pos["button_add_layer"], 84.0, 17.0, self.init_layer)
-        self.ok_btn = self.create_button("button_1.png", init_pos["button_ok"], 104, 37, self.save_values)  
+        self.ok_btn = self.create_button("button_1.png", init_pos["button_ok"], 104, 37, lambda: self.save_values())  
 
     def init_layer(self):
         add_x = init_pos["layer_combobox"][1]
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
-        self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
-        self.create_button("button_3.png", [init_pos["layer_combobox"][0] + increase, add_x], 76.0, 13.0, lambda: print('layer removed'))
+        self.create_button("button_3.png", [init_pos["layer_combobox"][0] + increase+10, add_x+5], 76.0, 13.0, lambda: print('layer removed'))
         self.add_arg()
-        
-        increment_pos(init_pos['btn_rm'], increase)
         
     def add_arg(self):
         for i in range(len(self.args)):
-            self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
-            
+            arg, textbox, equal = self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
+            self.textbox_widgets.append((self.layer_widgets[-1], arg, textbox))  # Store the layer widget along with the argument widget and textbox
         self.reposition_widgets()
 
     def save_values(self):
-        self.layer_names = {widget.current(): widget.get() for widget in self.layer_widgets}
-        self.arg_names = {widget.current(): widget.get() for widget in self.arg_widgets}
-        print("layers: ", list(self.layer_names.values())," args: ", list(self.arg_names.values()))
+        for layer_widget in self.layer_widgets:
+            new_layer_name = layer_widget.get()
+            old_layer_name = self.layer_widget_keys.get(layer_widget)
+
+            if old_layer_name is not None and old_layer_name in self.data:
+                self.data[new_layer_name] = self.data.pop(old_layer_name)
+            elif new_layer_name not in self.data:
+                self.data[new_layer_name] = {}
+
+            for layer_widget_arg, arg_widget, textbox in self.textbox_widgets:
+                if layer_widget_arg != layer_widget:  # Skip if the argument doesn't belong to the current layer
+                    continue
+
+                new_arg_name = arg_widget.get()
+                old_arg_name = self.arg_widget_keys.get(arg_widget)
+                textbox_value = textbox.get()
+
+                if textbox_value.strip() == '':
+                    continue  # Ignore empty textboxes
+
+                if old_arg_name is not None and old_arg_name in self.data[new_layer_name]:
+                    self.data[new_layer_name][new_arg_name] = self.data[new_layer_name].pop(old_arg_name)
+
+                self.data[new_layer_name][new_arg_name] = textbox_value  # Update the value every time
+
+                self.arg_widget_keys[arg_widget] = new_arg_name
+
+            self.layer_widget_keys[layer_widget] = new_layer_name
+
+        print("layers: ", self.data)
         
     def create_layer_name(self, index_pos: list, layer_pos: list):
         index = self.canvas.create_text( 
@@ -82,7 +113,6 @@ class Layer():
         layer_var = StringVar()
         layer = ttk.Combobox(self.window, values=self.layer, width=10, textvariable=layer_var, state="readonly")
         self.layer_widgets.append(layer)
-        layer = ttk.Combobox(self.window, values=self.layer, width=10, textvariable=layer_var, state="readonly")
         self.canvas.create_window(
             layer_pos[0],
             layer_pos[1],
@@ -113,7 +143,7 @@ class Layer():
         )
 
         textbox = Entry(
-            bd=0,
+            bd=1,
             bg="#FFFFFF",
             fg="#000716",
             highlightthickness=0
@@ -126,7 +156,7 @@ class Layer():
             window=textbox
         )
         
-        self.last_y += increase  # Update the y-coordinate of the last widget
+        self.last_y += increase/2  # Update the y-coordinate of the last widget
         increment_pos(init_pos['layer_combobox'], increase/2)
         increment_pos(init_pos['arg_combobox'], increase/2)
         increment_pos(init_pos['textbox'], increase/2)
