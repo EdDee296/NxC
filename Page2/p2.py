@@ -3,6 +3,10 @@ from pathlib import Path
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Button, PhotoImage, Radiobutton, IntVar, StringVar, ttk
 import random
+import inspect  
+import sys
+sys.path.append('C:/Users/ASUS/OneDrive/New folder/New folder')
+from main import *
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -60,12 +64,12 @@ class Layer():
         add_x = init_pos["layer_combobox"][1]
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
         self.create_button("button_3.png", [init_pos["layer_combobox"][0] + increase+10, add_x+5], 76.0, 13.0, lambda: print('layer removed'))
+        self.create_button("button_4.png", init_pos['add_arg'], 76.0, 13.0, self.add_arg)
         self.add_arg()
         
     def add_arg(self):
-        for i in range(len(self.args)):
-            arg, textbox, equal = self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
-            self.textbox_widgets.append((self.layer_widgets[-1], arg, textbox))  # Store the layer widget along with the argument widget and textbox
+        arg, textbox, equal = self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
+        self.textbox_widgets.append((self.layer_widgets[-1], arg, textbox))  # Store the layer widget along with the argument widget and textbox
         self.reposition_widgets()
 
     def save_values(self):
@@ -107,7 +111,7 @@ class Layer():
 
             self.layer_widget_keys[layer_widget] = new_layer_name
 
-        print("layers: ", self.data)
+        print("layers: ", self.data, '\n')
         
     def create_layer_name(self, index_pos: list, layer_pos: list):
         index = self.canvas.create_text( 
@@ -309,7 +313,7 @@ md_type = canvas.create_image(
 )
 
 layer = ['a', 'b', 'c', 'd', 'e', 'f']
-args = ['1', '2', '3', '4', '5']
+args = list(inspect.signature(Conv2D).parameters.keys())
 
 a = Layer(window, canvas, layer, args)
 a.init_layer()

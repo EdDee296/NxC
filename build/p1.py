@@ -4,7 +4,7 @@ import sys
 sys.path.append('C:/Users/ASUS/OneDrive/New folder/New folder')
 
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, END
+from tkinter import Tk, Canvas, Entry, Button, PhotoImage, END
 from main import *
 
 
