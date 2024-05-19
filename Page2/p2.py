@@ -2,6 +2,7 @@ from pathlib import Path
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Button, PhotoImage, Radiobutton, IntVar, StringVar, ttk
+import random
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -74,10 +75,12 @@ class Layer():
 
             # If the layer name already exists, add a number to the end
             original_layer_name = new_layer_name
-            i = 1
+            i = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '[', ']', '{', '}', '|', '\\', ';', ':', "'", '"', ',', '.', '<', '>', '/', '?']
+
             while new_layer_name in self.data and new_layer_name != old_layer_name:
-                new_layer_name = original_layer_name + str(i)
-                i += 1
+                if not new_layer_name[len(new_layer_name) - 1] in i:
+                    new_layer_name = original_layer_name + random.choice(i)
+
 
             if old_layer_name is not None and old_layer_name in self.data:
                 self.data[new_layer_name] = self.data.pop(old_layer_name)
