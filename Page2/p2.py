@@ -37,11 +37,11 @@ init_pos = {'button_add_layer': [119.0, 341.0],
 increase = 100
 
 class Layer():
-    def __init__(self, window: Tk, canvas: Canvas, layer: list, args: list):
+    def __init__(self, window: Tk, canvas: Canvas):
         self.window = window
         self.canvas = canvas
-        self.layer = layer
-        self.args = args
+        self.layer = ['Conv2D', 'MaxPooling2D', 'Dense', 'Flatten']
+        self.args = []
         self.index = 0
         self.last_y = init_pos['layer_combobox'][1]  # Keep track of the y-coordinate of the last widget
         self.images = []
@@ -65,7 +65,13 @@ class Layer():
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
         self.create_button("button_3.png", [init_pos["layer_combobox"][0] + increase+10, add_x+5], 76.0, 13.0, lambda: print('layer removed'))
         self.create_button("button_4.png", init_pos['add_arg'], 76.0, 13.0, self.add_arg)
-        self.add_arg()
+        self.last_y += increase/3  # Update the y-coordinate of the last widget
+        increment_pos(init_pos['layer_combobox'], increase/3)
+        increment_pos(init_pos['arg_combobox'], increase/3)
+        increment_pos(init_pos['textbox'], increase/3)
+        increment_pos(init_pos['index'], increase/3)
+        increment_pos(init_pos['equal'], increase/3)
+        self.reposition_widgets()
         
     def add_arg(self):
         arg, textbox, equal = self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
@@ -112,7 +118,10 @@ class Layer():
             self.layer_widget_keys[layer_widget] = new_layer_name
 
         print("layers: ", self.data, '\n')
-        
+    
+    def get_args(self, layer_name):
+        self.args = list(inspect.signature(globals()[layer_name]).parameters.keys())
+
     def create_layer_name(self, index_pos: list, layer_pos: list):
         index = self.canvas.create_text( 
             index_pos[0],
@@ -125,6 +134,7 @@ class Layer():
         self.index +=1
         layer_var = StringVar()
         layer = ttk.Combobox(self.window, values=self.layer, width=10, textvariable=layer_var, state="readonly")
+        layer.bind("<<ComboboxSelected>>", lambda event: self.get_args(layer_var.get()))  # Update the argument list when a layer is selected  # Use after_idle to call get_args
         self.layer_widgets.append(layer)
         self.canvas.create_window(
             layer_pos[0],
@@ -169,11 +179,11 @@ class Layer():
         )
         
         self.last_y += increase/2  # Update the y-coordinate of the last widget
-        increment_pos(init_pos['layer_combobox'], increase/2)
-        increment_pos(init_pos['arg_combobox'], increase/2)
-        increment_pos(init_pos['textbox'], increase/2)
-        increment_pos(init_pos['index'], increase/2)
-        increment_pos(init_pos['equal'], increase/2)
+        increment_pos(init_pos['layer_combobox'], increase/3)
+        increment_pos(init_pos['arg_combobox'], increase/3)
+        increment_pos(init_pos['textbox'], increase/3)
+        increment_pos(init_pos['index'], increase/3)
+        increment_pos(init_pos['equal'], increase/3)
         
         return arg, textbox, equal
     
@@ -312,10 +322,8 @@ md_type = canvas.create_image(
     image=image_image_5
 )
 
-layer = ['a', 'b', 'c', 'd', 'e', 'f']
-args = list(inspect.signature(Conv2D).parameters.keys())
 
-a = Layer(window, canvas, layer, args)
+a = Layer(window, canvas)
 a.init_layer()
 
 window.resizable(False, False)
