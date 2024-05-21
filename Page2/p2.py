@@ -45,7 +45,7 @@ class Layer():
         self.index = 0
         self.last_y = init_pos['layer_combobox'][1]  # Keep track of the y-coordinate of the last widget
         self.images = []
-
+        self.layer_id = []
         self.layer_widgets = []
         self.arg_widgets = []
         self.textbox_widgets = []
@@ -64,7 +64,6 @@ class Layer():
     def init_layer(self):
         add_x = init_pos["layer_combobox"][1]
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
-        self.create_button("button_3.png", [init_pos["layer_combobox"][0] + increase+10, add_x+5], 76.0, 13.0, lambda: print('layer removed'))
         
         self.last_y += increase  # Update the y-coordinate of the last widget
         increment_pos(init_pos['layer_combobox'], increase)
@@ -165,7 +164,7 @@ class Layer():
         print("layers: ", self.data, '\n')
     
     def get_args(self, layer_name):
-        self.args = list(inspect.signature(globals()[layer_name]).parameters.keys())
+        self.args = list(inspect.signature(globals()[layer_name]).parameters.keys())[:-1]
 
     def create_layer_name(self, index_pos: list, layer_pos: list):
         index = self.canvas.create_text( 
@@ -195,6 +194,7 @@ class Layer():
         self.canvas.coords(self.ok_btn, init_pos["button_ok"][0], self.last_y + 50)
         self.canvas.coords(self.add_arg_btn, init_pos["add_arg"][0], self.last_y)
 
+
     def create_button(self, img_name, button_pos: list, width, height, command):
         img = PhotoImage(
             file=relative_to_assets(img_name))
@@ -215,12 +215,6 @@ class Layer():
         )
         
         return button_id
-
-    def remove_argument(self, arg, textbox, equal):
-        self.delete(arg, textbox, equal)
-
-    def remove_layer(self, layer, index):
-        self.delete(layer, index)
 
     def update_name(self, dict, widget, name):
         dict[widget.current()] = name
