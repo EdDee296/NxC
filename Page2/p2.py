@@ -34,7 +34,7 @@ init_pos = {'button_add_layer': [119.0, 341.0],
             'arg_combobox': [125.0, 304.0],
             'textbox': [250.0, 310.0]}
 
-increase = 100
+increase = 70
 
 class Layer():
     def __init__(self, window: Tk, canvas: Canvas):
@@ -65,13 +65,57 @@ class Layer():
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
         self.create_button("button_3.png", [init_pos["layer_combobox"][0] + increase+10, add_x+5], 76.0, 13.0, lambda: print('layer removed'))
         self.create_button("button_4.png", init_pos['add_arg'], 76.0, 13.0, self.add_arg)
-        self.last_y += increase/3  # Update the y-coordinate of the last widget
-        increment_pos(init_pos['layer_combobox'], increase/3)
-        increment_pos(init_pos['arg_combobox'], increase/3)
-        increment_pos(init_pos['textbox'], increase/3)
-        increment_pos(init_pos['index'], increase/3)
-        increment_pos(init_pos['equal'], increase/3)
+        self.last_y += increase  # Update the y-coordinate of the last widget
+        increment_pos(init_pos['layer_combobox'], increase)
+        increment_pos(init_pos['arg_combobox'], increase)
+        increment_pos(init_pos['textbox'], increase)
+        increment_pos(init_pos['index'], increase)
+        increment_pos(init_pos['equal'], increase)
         self.reposition_widgets()
+
+    def create_argument(self, arg_pos: list, equal_pos: list, textbox_pos: list):
+        arg_var = StringVar()
+        arg_var.trace_add("write", lambda *argu: self.update_name(self.arg_names, arg, arg_var.get()))
+
+        arg = ttk.Combobox(self.window, values=self.args, width=7, textvariable=arg_var, state="readonly")
+        self.arg_widgets.append(arg)
+        self.canvas.create_window(
+            arg_pos[0],
+            arg_pos[1],
+            window=arg
+        )
+
+        equal = self.canvas.create_text( 
+            equal_pos[0],
+            equal_pos[1],
+            anchor="nw",
+            text="=",
+            fill="#000000",
+            font=("Inter", 12 * -1)
+        )
+
+        textbox = Entry(
+            bd=1,
+            bg="#FFFFFF",
+            fg="#000716",
+            highlightthickness=0
+        )
+        self.canvas.create_window(
+            textbox_pos[0],
+            textbox_pos[1],
+            width=80.0,
+            height=16.0,
+            window=textbox
+        )
+        
+        self.last_y += increase  # Update the y-coordinate of the last widget
+        increment_pos(init_pos['layer_combobox'], increase)
+        increment_pos(init_pos['arg_combobox'], increase)
+        increment_pos(init_pos['textbox'], increase)
+        increment_pos(init_pos['index'], increase)
+        increment_pos(init_pos['equal'], increase)
+        
+        return arg, textbox, equal
         
     def add_arg(self):
         arg, textbox, equal = self.create_argument(init_pos['arg_combobox'], init_pos['equal'], init_pos['textbox'])
@@ -143,50 +187,7 @@ class Layer():
         )
         return layer, index
 
-    def create_argument(self, arg_pos: list, equal_pos: list, textbox_pos: list):
-        arg_var = StringVar()
-        arg_var.trace_add("write", lambda *argu: self.update_name(self.arg_names, arg, arg_var.get()))
-
-        arg = ttk.Combobox(self.window, values=self.args, width=7, textvariable=arg_var, state="readonly")
-        self.arg_widgets.append(arg)
-        self.canvas.create_window(
-            arg_pos[0],
-            arg_pos[1],
-            window=arg
-        )
-
-        equal = self.canvas.create_text( 
-            equal_pos[0],
-            equal_pos[1],
-            anchor="nw",
-            text="=",
-            fill="#000000",
-            font=("Inter", 12 * -1)
-        )
-
-        textbox = Entry(
-            bd=1,
-            bg="#FFFFFF",
-            fg="#000716",
-            highlightthickness=0
-        )
-        self.canvas.create_window(
-            textbox_pos[0],
-            textbox_pos[1],
-            width=80.0,
-            height=16.0,
-            window=textbox
-        )
         
-        self.last_y += increase/2  # Update the y-coordinate of the last widget
-        increment_pos(init_pos['layer_combobox'], increase/3)
-        increment_pos(init_pos['arg_combobox'], increase/3)
-        increment_pos(init_pos['textbox'], increase/3)
-        increment_pos(init_pos['index'], increase/3)
-        increment_pos(init_pos['equal'], increase/3)
-        
-        return arg, textbox, equal
-    
     def reposition_widgets(self):
         # Reposition all widgets based on the y-coordinate of the last widget
         self.canvas.coords(self.add_layer_btn, init_pos['button_add_layer'][0] + 15, self.last_y)
