@@ -26,7 +26,7 @@ def decrement_pos(pos: list, x: int):
     return pos
 
 init_pos = {'button_add_layer': [119.0, 341.0],  
-            'add_arg': [335, 310], 
+            'add_arg': [240, 341], 
             'button_ok': [330, 380],
             'index': [70.0, 269.0],
             'equal': [180.0, 304.0],
@@ -59,12 +59,13 @@ class Layer():
         self.data = {}
         self.add_layer_btn = self.create_button("button_2.png", init_pos["button_add_layer"], 84.0, 17.0, self.init_layer)
         self.ok_btn = self.create_button("button_1.png", init_pos["button_ok"], 104, 37, lambda: self.save_values())  
+        self.add_arg_btn = self.create_button("button_4.png", init_pos['add_arg'], 76.0, 13.0, self.add_arg)
 
     def init_layer(self):
         add_x = init_pos["layer_combobox"][1]
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
         self.create_button("button_3.png", [init_pos["layer_combobox"][0] + increase+10, add_x+5], 76.0, 13.0, lambda: print('layer removed'))
-        self.create_button("button_4.png", init_pos['add_arg'], 76.0, 13.0, self.add_arg)
+        
         self.last_y += increase  # Update the y-coordinate of the last widget
         increment_pos(init_pos['layer_combobox'], increase)
         increment_pos(init_pos['arg_combobox'], increase)
@@ -192,6 +193,7 @@ class Layer():
         # Reposition all widgets based on the y-coordinate of the last widget
         self.canvas.coords(self.add_layer_btn, init_pos['button_add_layer'][0] + 15, self.last_y)
         self.canvas.coords(self.ok_btn, init_pos["button_ok"][0], self.last_y + 50)
+        self.canvas.coords(self.add_arg_btn, init_pos["add_arg"][0], self.last_y)
 
     def create_button(self, img_name, button_pos: list, width, height, command):
         img = PhotoImage(
