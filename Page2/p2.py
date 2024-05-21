@@ -17,7 +17,6 @@ def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 # pos is [x,y]
-
 def increment_pos(pos: list, x: int):
     pos[1] += x
     return pos
@@ -40,7 +39,7 @@ class Layer():
     def __init__(self, window: Tk, canvas: Canvas):
         self.window = window
         self.canvas = canvas
-        self.layer = ['Conv2D', 'MaxPooling2D', 'Dense', 'Flatten']
+        self.layer = ['Conv2D', 'MaxPooling2D', 'Dense', 'Flatten', '']
         self.args = []
         self.index = 0
         self.last_y = init_pos['layer_combobox'][1]  # Keep track of the y-coordinate of the last widget
@@ -58,11 +57,10 @@ class Layer():
 
         self.data = {}
         self.add_layer_btn = self.create_button("button_2.png", init_pos["button_add_layer"], 84.0, 17.0, self.init_layer)
-        self.ok_btn = self.create_button("button_1.png", init_pos["button_ok"], 104, 37, lambda: self.save_values())  
+        self.ok_btn = self.create_button("button_1.png", init_pos["button_ok"], 104, 37, self.print_model)  
         self.add_arg_btn = self.create_button("button_4.png", init_pos['add_arg'], 76.0, 13.0, self.add_arg)
 
     def init_layer(self):
-        add_x = init_pos["layer_combobox"][1]
         self.create_layer_name(init_pos['index'], init_pos['layer_combobox'])
         
         self.last_y += increase  # Update the y-coordinate of the last widget
@@ -162,9 +160,11 @@ class Layer():
             self.layer_widget_keys[layer_widget] = new_layer_name
 
         print("layers: ", self.data, '\n')
+        print_selection()
     
     def get_args(self, layer_name):
         self.args = list(inspect.signature(globals()[layer_name]).parameters.keys())[:-1]
+        self.args.append(" ")
 
     def create_layer_name(self, index_pos: list, layer_pos: list):
         index = self.canvas.create_text( 
@@ -218,6 +218,31 @@ class Layer():
 
     def update_name(self, dict, widget, name):
         dict[widget.current()] = name
+    
+    def create_model_from_dict(self, layers):
+        model = Sequential()
+        for layer_name, args in layers.items():
+            # Remove any special characters from the layer name
+            clean_layer_name = ''.join(e for e in layer_name if e.isalnum())
+            # Get the layer class from globals
+            LayerClass = globals()[clean_layer_name]
+            # Convert string values in args to actual values
+            for arg, value in args.items():
+                if value.isdigit():
+                    args[arg] = int(value)
+                elif value.startswith('(') and value.endswith(')'):
+                    args[arg] = tuple(map(int, value[1:-1].split(',')))
+            # Add the layer to the model
+            model.add(LayerClass(**args))
+        return model
+    
+    def print_model(self):
+        self.save_values()
+        model = self.create_model_from_dict(self.data)
+        model.compile('adam', loss=tf.losses.BinaryCrossentropy(),
+                    metrics=['accuracy'])
+        
+        model.summary()
 
 window = Tk()
 
