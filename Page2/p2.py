@@ -7,14 +7,14 @@ import inspect
 import sys
 sys.path.append('C:/Users/ASUS/OneDrive/New folder/New folder')
 from main import *
+import json
 
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ASUS\Downloads\Tkinter-Designer-master\Tkinter-Designer-master\Page2\assets\frame0")
-
-
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
+
 
 # pos is [x,y]
 def increment_pos(pos: list, x: int):
@@ -24,6 +24,11 @@ def decrement_pos(pos: list, x: int):
     pos[1] -= x
     return pos
 
+
+# Read data from the file
+with open("data.json", "r") as f:
+    database = json.load(f)
+
 init_pos = {'button_add_layer': [119.0, 341.0],  
             'add_arg': [240, 341], 
             'button_ok': [330, 380],
@@ -32,8 +37,9 @@ init_pos = {'button_add_layer': [119.0, 341.0],
             'layer_combobox': [133.0, 273.0],
             'arg_combobox': [125.0, 304.0],
             'textbox': [250.0, 310.0]}
-
 increase = 70
+
+image_exts = ['jpeg', 'jpg', 'bmp', 'png']
 
 class Layer():
     def __init__(self, window: Tk, canvas: Canvas):
@@ -45,6 +51,7 @@ class Layer():
         self.last_y = init_pos['layer_combobox'][1]  # Keep track of the y-coordinate of the last widget
         self.images = []
         self.layer_id = []
+
         self.layer_widgets = []
         self.arg_widgets = []
         self.textbox_widgets = []
@@ -54,6 +61,8 @@ class Layer():
         
         self.layer_widget_keys = {}  # Keeps track of the current keys in self.data
         self.arg_widget_keys = {}  # Keeps track of the current keys in the inner dictionaries
+
+        self.model = None
 
         self.data = {}
         self.add_layer_btn = self.create_button("button_2.png", init_pos["button_add_layer"], 84.0, 17.0, self.init_layer)
@@ -187,13 +196,11 @@ class Layer():
         )
         return layer, index
 
-        
     def reposition_widgets(self):
         # Reposition all widgets based on the y-coordinate of the last widget
         self.canvas.coords(self.add_layer_btn, init_pos['button_add_layer'][0] + 15, self.last_y)
         self.canvas.coords(self.ok_btn, init_pos["button_ok"][0], self.last_y + 50)
         self.canvas.coords(self.add_arg_btn, init_pos["add_arg"][0], self.last_y)
-
 
     def create_button(self, img_name, button_pos: list, width, height, command):
         img = PhotoImage(
@@ -234,15 +241,16 @@ class Layer():
                     args[arg] = tuple(map(int, value[1:-1].split(',')))
             # Add the layer to the model
             model.add(LayerClass(**args))
+        model.compile('adam', loss=tf.losses.BinaryCrossentropy(), metrics=['accuracy'])
         return model
     
     def print_model(self):
         self.save_values()
-        model = self.create_model_from_dict(self.data)
-        model.compile('adam', loss=tf.losses.BinaryCrossentropy(),
-                    metrics=['accuracy'])
-        
-        model.summary()
+        self.model = self.create_model_from_dict(self.data)
+        self.model.summary()
+        hist = trainModel(a.model, train, val, database['logs_path'])
+        evaluate(self.model, test)
+        self.model.save(os.path.join('models', database['name']+'.h5'))
 
 window = Tk()
 
@@ -344,9 +352,24 @@ md_type = canvas.create_image(
     image=image_image_5
 )
 
+if lim != 0:
+    limit()
+
+try:
+    checkImg(database['data_path'], image_exts)
+except Exception as e: # Catch any exception
+    print("Invalid dir: ", database['data_path'])
+batch = getBatch(database['data_path'])[0]
+data = getBatch(database['data_path'])[1]
+scaled_data = scale(data)
+
+train = splitData(scaled_data)[0]
+val = splitData(scaled_data)[1]
+test = splitData(scaled_data)[2]
 
 a = Layer(window, canvas)
 a.init_layer()
+
 
 window.resizable(False, False)
 window.mainloop()

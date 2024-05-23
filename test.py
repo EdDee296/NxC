@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from tensorflow.keras.models import load_model
 
-new_model = load_model(os.path.join('models','testKP.h5'))
+new_model = load_model(os.path.join('models','test.h5'))
 # Test the model
 img = cv2.imread('1.jpeg')
 plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))

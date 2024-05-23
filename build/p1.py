@@ -6,30 +6,27 @@ sys.path.append('C:/Users/ASUS/OneDrive/New folder/New folder')
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Button, PhotoImage, END
 from main import *
-
+import json
+import subprocess
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ASUS\OneDrive\New folder\New folder\build\assets\frame0")
 
+def relative_to_assets(path: str) -> Path:
+    return ASSETS_PATH / Path(path)
+
+
+data = {}
 
 def save():
     global name, data_path, logs_path
     name = entry_1.get()
     data_path = entry_2.get()
     logs_path = entry_3.get()
+    data['name'] = name
+    data['data_path'] = data_path
+    data['logs_path'] = logs_path
     print(name, data_path, logs_path)
-    canvas = Canvas(
-    window,
-    bg = "#FFFFFF",
-    height = 423,
-    width = 670,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge"
-)
-
-    canvas.place(x = 0, y = 0)
-
 
 def openFile(type):
     if type == "data":
@@ -78,9 +75,15 @@ def openFile(type):
             entry_3.delete(0,END)
             entry_3.insert(0,"Invalid directory.❌")
 
-
-def relative_to_assets(path: str) -> Path:
-    return ASSETS_PATH / Path(path)
+def ok_command():
+    # Your existing code here...
+    save()
+    with open("data.json", "w") as f:
+        json.dump(data, f)
+    # Run p2.py
+    window.destroy()
+    subprocess.run(["python", "Page2/p2.py"])
+    
 
 
 window = Tk()
@@ -208,7 +211,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: save(),
+    command=ok_command,
     relief="flat"
 )
 button_1.place(

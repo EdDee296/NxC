@@ -105,6 +105,7 @@ def createModel():
     # adam optimizer, binary crossentropy loss, accuracy metric
     model.compile('adam', loss=tf.losses.BinaryCrossentropy(),
                     metrics=['accuracy'])
+    return model
 
 
 
